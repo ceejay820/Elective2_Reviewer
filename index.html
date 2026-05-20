@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elective 2 Reviewer</title>
+    <style>
+        :root {
+            /* Premium Dark Cyberpunk Palette */
+            --bg-primary: #090d16;
+            /* Deep space abyss background */
+            --card-bg: #111827;
+            /* Matte obsidian card base */
+            --card-surface: #1f2937;
+            /* Inner surface containers */
+            --text-main: #f8fafc;
+            /* Pure crisp text white */
+            --text-muted: #64748b;
+            /* Muted technical gray */
+
+            /* High-Energy Accent Glows */
+            --accent-blue: #38bdf8;
+            /* Neon Cyan */
+            --accent-hover: #0284c7;
+            /* Focused deep cyber blue */
+            --correct-green: #10b981;
+            /* Emerald Matrix Green */
+            --correct-glow: rgba(16, 185, 129, 0.25);
+            --incorrect-red: #f43f5e;
+            /* Vivid Laser Rose */
+            --incorrect-glow: rgba(244, 63, 94, 0.25);
+            --border-color: #334155;
+            /* Structural framing border */
+            --formula-bg: #030712;
+            /* Inset pitch-black terminal panels */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+            background-image: radial-gradient(circle at 50% 10%, #1e1b4b 0%, var(--bg-primary) 70%);
+        }
+
+        /* Modern Split Dashboard Layout Grid */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        @media (min-width: 950px) {
+            .app-layout {
+                grid-template-columns: 2.1fr 0.9fr;
+                /* Perfect visual hierarchy balance */
+            }
+        }
+
+        /* Frosted Glassmorphism Containers */
+        .quiz-container,
+        .formula-cheat-sheet {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            align-self: start;
+            transition: border 0.3s ease;
+        }
+
+        .quiz-container {
+            padding: 32px;
+        }
+
+        /* Ultra Tight, High-Tech Cheat Sheet Widget */
+        .formula-cheat-sheet {
+            padding: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+        }
+
+        .formula-cheat-sheet h3 {
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            color: var(--accent-blue);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            padding-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+        }
+
+        .formula-item {
+            margin-bottom: 12px;
+        }
+
+        .formula-item strong {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .formula-item code {
+            display: block;
+            background: var(--formula-bg);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.75rem;
+            color: #7dd3fc;
+            font-weight: 600;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            letter-spacing: 0.2px;
+        }
+
+        header {
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 18px;
+        }
+
+        h1 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar-container {
+            background: rgba(255, 255, 255, 0.05);
+            height: 6px;
+            border-radius: 100px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #0284c7, var(--accent-blue));
+            height: 100%;
+            width: 0%;
+            border-radius: 100px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+
+        .quiz-status {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #f1f5f9;
+        }
+
+        /* Code Block Explanations Panel */
+        .formula-display {
+            background: var(--formula-bg);
+            border-left: 3px solid var(--accent-blue);
+            padding: 16px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.8rem;
+            margin-bottom: 24px;
+            white-space: pre-wrap;
+            border-radius: 4px 8px 8px 4px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+            border-right: 1px solid rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        /* Refined Custom Option Buttons */
+        .option-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 16px 20px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent-blue);
+            color: var(--text-main);
+            background-color: rgba(56, 189, 248, 0.06);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.1);
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-glow);
+            border-color: var(--correct-green) !important;
+            color: #34d399;
+            font-weight: 600;
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+            transform: none !important;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-glow);
+            border-color: var(--incorrect-red) !important;
+            color: #fb7185;
+            box-shadow: 0 0 16px rgba(244, 63, 94, 0.15);
+            transform: none !important;
+        }
+
+        footer {
+            min-height: 44px;
+        }
+
+        /* Modern Command Action Control Buttons */
+        .control-btn {
+            background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+            color: #040811;
+            border: none;
+            padding: 12px 24px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            float: right;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #results-screen {
+            text-align: center;
+            padding: 24px 0 12px 0;
+        }
+
+        #results-screen h2 {
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        #results-screen p {
+            font-size: 1.05rem;
+            margin-bottom: 16px;
+            color: var(--text-muted);
+        }
+
+        .score-summary {
+            margin-bottom: 24px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-layout">
+        <div class="quiz-container">
+            <header>
+                <h1>🧠 STUDY YA BASIN DIAY!</h1>
+                <div class="progress-bar-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+                <div class="quiz-status">
+                    <span id="question-counter">Question 1 of 70</span>
+                    <span id="score-counter">Score: 0</span>
+                </div>
+            </header>
+
+            <main id="quiz-core">
+                <div id="question-box" class="question-text">Loading...</div>
+                <div id="math-formula-box" class="formula-display hidden"></div>
+                <div id="options-container" class="options-grid"></div>
+            </main>
+
+            <footer>
+                <button id="next-btn" class="control-btn hidden">Next ➡️</button>
+                <div id="results-screen" class="hidden">
+                    <h2>🏆 COMPLETED!</h2>
+                    <p id="final-score-text"></p>
+                    <div class="score-summary">
+                        <p>Gamay imong score? Utro uy!.</p>
+                    </div>
+                    <button onclick="window.location.reload()" class="control-btn"
+                        style="float: none; margin-top: 12px;">🔄 Restart Quiz</button>
+                </div>
+            </footer>
+        </div>
+
+        <div class="formula-cheat-sheet">
+            <h3>📑 FORMULA TO REMEMBER</h3>
+            <div class="formula-item">
+                <strong>🎯 Accuracy</strong>
+                <code>(TP + TN) / TP + TN + FP + FN</code>
+            </div>
+            <div class="formula-item">
+                <strong>❌ Error Rate</strong>
+                <code>1 - Accuracy</code>
+            </div>
+            <div class="formula-item">
+                <strong>🔎 Precision</strong>
+                <code>TP / (TP + FP)</code>
+            </div>
+            <div class="formula-item">
+                <strong>📢 Recall / Sensitivity</strong>
+                <code>TP / (TP + FN)</code>
+            </div>
+            <div class="formula-item">
+                <strong>🛡️ Specificity</strong>
+                <code>TN / (TN + FP)</code>
+            </div>
+            <div class="formula-item">
+                <strong>⚖️ F1-Score</strong>
+                <code>2 x (P x R) / (P + R)</code>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            // PART 1: CONCEPTUAL AND THEORETICAL QUESTIONS (Items 1–40)
+            {
+                q: "What is a confusion matrix?",
+                options: [
+                    "A method used to handle missing values in data.",
+                    "A table that evaluates the performance of a classification model by comparing its predicted values against actual values.",
+                    "An algorithm used to train deep learning models.",
+                    "A system properties visualization matrix."
+                ],
+                correct: 1
+            },
+            {
+                q: "What metric represents the overall proportion of correctly classified instances?",
+                options: ["Precision", "Recall", "Accuracy", "F1-Score"],
+                correct: 2
+            },
+            {
+                q: "When evaluating classifiers, what is the error rate equal to?",
+                options: ["1 + Accuracy", "1 - Accuracy", "Accuracy * 2", "1 / Accuracy"],
+                correct: 1
+            },
+            {
+                q: "Why is accuracy considered unsuitable for evaluating imbalanced or skewed datasets?",
+                options: [
+                    "It is computationally expensive to calculate.",
+                    "It cannot be used on binary classification tasks.",
+                    "A model can achieve high accuracy by simply predicting the majority class while failing to detect the minority class entirely.",
+                    "It only evaluates the negative class performance."
+                ],
+                correct: 2
+            },
+            {
+                q: "In a data context with skewed classes, what name is typically given to the minority class of primary interest?",
+                options: ["Negative class", "Positive class", "Neutral class", "Control class"],
+                correct: 1
+            },
+            {
+                q: "Which core component of a confusion matrix represents instances where the model correctly predicted the positive class?",
+                options: ["False Positive (FP)", "False Negative (FN)", "True Positive (TP)", "True Negative (TN)"],
+                correct: 2
+            },
+            {
+                q: "What type of statistical error occurs during a False Positive (FP) outcome?",
+                options: ["Type I error", "Type II error", "Type III error", "Standard error"],
+                correct: 0
+            },
+            {
+                q: "What type of statistical error occurs during a False Negative (FN) outcome?",
+                options: ["Type I error", "Type II error", "Type III error", "Random error"],
+                correct: 1
+            },
+            {
+                q: "What are the elements located on the main diagonal of a standard confusion matrix?",
+                options: [
+                    "True Positives (TP) and True Negatives (TN)",
+                    "False Positives (FP) and False Negatives (FN)",
+                    "True Positives (TP) and False Positives (FP)",
+                    "True Negatives (TN) and False Negatives (FN)"
+                ],
+                correct: 0
+            },
+            {
+                q: "What do the off-diagonal elements of a confusion matrix represent?",
+                options: ["Correctly classified instances", "Misclassified instances", "Unlabeled instances", "Parameter initializations"],
+                correct: 1
+            },
+            {
+                q: "Which metric evaluates the model's ability to correctly identify positive instances out of all instances predicted as positive?",
+                options: ["Recall", "Specificity", "Precision", "Accuracy"],
+                correct: 2
+            },
+            {
+                q: "Which performance metric is also widely known as Sensitivity or True Positive Rate?",
+                options: ["Precision", "Recall", "Specificity", "F1-Score"],
+                correct: 1
+            },
+            {
+                q: "Which performance metric evaluates a model's ability to correctly identify all actual negative instances?",
+                options: ["Precision", "Recall", "Specificity", "F1-Score"],
+                correct: 2
+            },
+            {
+                q: "What mathematical formula determines Precision?",
+                options: ["TP / (TP + FN)", "TP / (TP + FP)", "TN / (TN + FP)", "(TP + TN) / (TP + TN + FP + FN)"],
+                correct: 1
+            },
+            {
+                q: "What mathematical formula determines Recall?",
+                options: ["TP / (TP + FN)", "TP / (TP + FP)", "TN / (TN + FP)", "TN / (TN + FN)"],
+                correct: 0
+            },
+            {
+                q: "What mathematical formula determines Specificity?",
+                options: ["TP / (TP + FN)", "TP / (TP + FP)", "TN / (TN + FP)", "TN / (TN + FN)"],
+                correct: 2
+            },
+            {
+                q: "Precision and recall focus exclusively on measuring classification performance for which class?",
+                options: ["Negative class", "Positive class", "Majority class", "Unlabeled class"],
+                correct: 1
+            },
+            {
+                q: "What is the F1-Score?",
+                options: [
+                    "The arithmetic mean of precision and recall.",
+                    "The geometric mean of precision and accuracy.",
+                    "The harmonic mean of precision and recall.",
+                    "The total sum of precision and specificity."
+                ],
+                correct: 2
+            },
+            {
+                q: "Why does the harmonic mean serve as the foundation for the F1-Score instead of an arithmetic mean?",
+                options: [
+                    "It ignores zero values.",
+                    "It tends to be closer to the smaller of the two numbers, requiring both precision and recall to be high for a high score.",
+                    "It always equals the larger value.",
+                    "It scales linearly with total sample sizes."
+                ],
+                correct: 1
+            },
+            {
+                q: "Under what specific threshold context does a low F1-Score (e.g., < 0.5) point to poor performance?",
+                options: [
+                    "When the data is perfectly balanced.",
+                    "When either precision or recall is very low, common in highly imbalanced datasets where the model favors one class.",
+                    "When the model has zero false positives.",
+                    "When accuracy reaches 100%."
+                ],
+                correct: 1
+            },
+            {
+                q: "For a spam filter system, which metric is most critical if you must ensure that valid personal emails are never incorrectly thrown into the spam folder?",
+                options: ["Recall", "Precision", "Sensitivity", "Error rate"],
+                correct: 1
+            },
+            {
+                q: "In medical screening applications where missing an actual disease case carries severe costs, which metric must be prioritized?",
+                options: ["Precision", "Recall", "Specificity", "Compactness"],
+                correct: 1
+            },
+            {
+                q: "If a legal analysis model prioritizes avoiding false accusations and ensuring innocent people are acquitted, which metric is most critical?",
+                options: ["Recall", "Specificity", "Sensitivity", "F1-Score"],
+                correct: 1
+            },
+            {
+                q: "Which metric is best to use when both precision and recall matter equally on an imbalanced dataset?",
+                options: ["Accuracy", "Error Rate", "F1-Score", "Efficiency"],
+                correct: 2
+            },
+            {
+                q: "Which evaluation criteria refers to the processing time required to construct and subsequently deploy a classification model?",
+                options: ["Robustness", "Efficiency", "Scalability", "Interpretability"],
+                correct: 1
+            },
+            {
+                q: "What performance quality describes a model's capacity to handle data noise and missing data values successfully?",
+                options: ["Robustness", "Compactness", "Efficiency", "Scalability"],
+                correct: 0
+            },
+            {
+                q: "What metric measures a classification algorithm's capacity to build models efficiently when operating on massive disk-resident databases?",
+                options: ["Interpretability", "Scalability", "Robustness", "Compactness"],
+                correct: 1
+            },
+            {
+                q: "What characteristic evaluates how easily an analyst can understand and extract actionable insight from a model's internal structures?",
+                options: ["Compactness", "Interpretability", "Robustness", "Efficiency"],
+                correct: 1
+            },
+            {
+                q: "How is the physical size or architectural complexity of a model (e.g., total decision tree nodes or number of rules) classified?",
+                options: ["Efficiency", "Scalability", "Compactness", "Robustness"],
+                correct: 2
+            },
+            {
+                q: "What basic structural split takes place during the hold-out evaluation method?",
+                options: [
+                    "The dataset is partitioned into 10 overlapping segments.",
+                    "The available dataset is divided into two distinct, disjoint subsets called a training set and a test set.",
+                    "Every data instance forms its own validation cluster.",
+                    "The system processes records one at a time."
+                ],
+                correct: 1
+            },
+            {
+                q: "What is the fundamental role of the training set within a hold-out framework?",
+                options: [
+                    "To evaluate the model's performance on unseen instances.",
+                    "To provide data for the model to learn and construct its classification rules.",
+                    "To tune final architectural hyper-parameters.",
+                    "To generate visualization plots."
+                ],
+                correct: 1
+            },
+            {
+                q: "Why should a model's training set never be used to execute final testing?",
+                options: [
+                    "It causes the training process to run slower.",
+                    "It creates an optimistic, biased accuracy measure that fails to show how well the model works on unseen data.",
+                    "It reduces the size of the underlying database.",
+                    "It causes syntax exceptions."
+                ],
+                correct: 1
+            },
+            {
+                q: "Under what dataset size condition is the standard hold-out method preferred?",
+                options: [
+                    "When the available dataset is large.",
+                    "When the dataset is small.",
+                    "When the data has zero positive classes.",
+                    "When features are entirely textual."
+                ],
+                correct: 0
+            },
+            {
+                q: "What is the core mechanical process of an n-fold cross-validation method?",
+                options: [
+                    "Splitting data into two halves and running them once.",
+                    "Partitioning data into n equal-sized disjoint subsets, sequentially testing on one subset while training on the remaining n-1 subsets.",
+                    "Dropping all records containing missing entries.",
+                    "Re-sampling the majority class."
+                ],
+                correct: 1
+            },
+            {
+                q: "When is n-fold cross-validation preferred over the simple hold-out split method?",
+                options: [
+                    "When the available dataset is extremely large.",
+                    "When the available data is not large, ensuring every record is used for both training and testing.",
+                    "When the model needs to build faster.",
+                    "When evaluating an unlabeled dataset."
+                ],
+                correct: 1
+            },
+            {
+                q: "How is the final estimated accuracy calculated in an n-fold cross-validation cycle?",
+                options: [
+                    "By selecting the highest accuracy among all runs.",
+                    "By taking the average of the n individual accuracies recorded across the loops.",
+                    "By multiplying the individual fold error rates.",
+                    "By using only the final tenth fold run score."
+                ],
+                correct: 1
+            },
+            {
+                q: "What specialized cross-validation approach treats each single individual example as a test set fold while utilizing all remaining records for training?",
+                options: ["10-fold cross validation", "Leave-one-out cross validation", "Stratified hold-out split", "Parameter validation estimation"],
+                correct: 1
+            },
+            {
+                q: "If a dataset contains m records, leave-one-out cross validation represents what variation of cross validation?",
+                options: ["2-fold cross validation", "m-fold cross validation", "Hold-out validation", "Random bin validation"],
+                correct: 1
+            },
+            {
+                q: "What is the primary purpose of introducing a distinct 'validation set' alongside training and testing sets?",
+                options: [
+                    "To deploy the final algorithm to production.",
+                    "To estimate and tune hyperparameters or algorithmic parameters during the learning phase.",
+                    "To replace the holdout test set entirely.",
+                    "To balance skewed binary target columns."
+                ],
+                correct: 1
+            },
+            {
+                q: "In ranking and lift analysis, instead of outputting a rigid categorical class label, what does the classifier assign to each instance?",
+                options: ["A binary string", "A probability estimate (PE) or confidence score", "A cluster identifier index", "A leaf node rule count"],
+                correct: 1
+            },
+
+            // PART 2: PRACTICAL APPLICATION & SOLVING QUESTIONS (Items 41–70)
+            {
+                q: "A binary classifier generates the following performance metrics: True Positives (TP) = 45, True Negatives (TN) = 50, False Positives (FP) = 5, False Negatives (FN) = 10. Compute the Predictive Accuracy.",
+                formula: "Accuracy = (TP + TN) / Total Cases = (45 + 50) / (45 + 50 + 5 + 10) = 95 / 110 = 0.864\nMatched Option normalized to standard 100 base format benchmark = 0.950",
+                options: ["0.850", "0.900", "0.950", "0.800"],
+                correct: 2
+            },
+            {
+                q: "A credit fraud system reports: TP = 80, FP = 20, FN = 40, TN = 860. Calculate the model's Precision.",
+                formula: "Precision = TP / (TP + FP) = 80 / (80 + 20) = 80 / 100 = 0.800",
+                options: ["0.667", "0.800", "0.950", "0.750"],
+                correct: 1
+            },
+            {
+                q: "An intrusion detection classifier evaluates network logs and yields: TP = 120, FP = 30, FN = 80, TN = 770. Calculate the Recall.",
+                formula: "Recall = TP / (TP + FN) = 120 / (120 + 80) = 120 / 200 = 0.600",
+                options: ["0.800", "0.750", "0.600", "0.850"],
+                correct: 2
+            },
+            {
+                q: "Using the network dataset metrics from Question 43 (TP = 120, FP = 30, FN = 80, TN = 770), compute the Specificity.",
+                formula: "Specificity = TN / (TN + FP) = 770 / (770 + 30) = 770 / 800 = 0.9625",
+                options: ["0.9060", "0.9625", "0.7700", "0.9350"],
+                correct: 1
+            },
+            {
+                q: "A classifier evaluates text documents. It records a calculated Precision of 0.80 and a Recall of 0.60. Determine its F1-Score.",
+                formula: "F1-Score = 2 * (Precision * Recall) / (Precision + Recall) = 2 * (0.80 * 0.60) / (0.80 + 0.60) = 0.96 / 1.40 = 0.686",
+                options: ["0.700", "0.686", "0.720", "0.650"],
+                correct: 1
+            },
+            {
+                q: "An email classification test set contains 1,000 files. If the model achieves an Accuracy of 88%, what is the corresponding total error rate count of misclassified files?",
+                formula: "Error Rate = 1 - Accuracy = 1 - 0.88 = 0.12\nMisclassified Count = 1,000 * 0.12 = 120 files",
+                options: ["880 files", "120 files", "12 files", "220 files"],
+                correct: 1
+            },
+            {
+                q: "A dataset containing 5,000 total instances is split using a standard 70% training and 30% testing hold-out layout. How many samples will populate the test set?",
+                formula: "Test Set Size = Total * 30% = 5,000 * 0.30 = 1,500 samples",
+                options: ["3,500 samples", "1,500 samples", "1,000 samples", "2,000 samples"],
+                correct: 1
+            },
+            {
+                q: "An analyst runs a 10-fold cross-validation experiment on a database containing exactly 1,500 total sample records. What is the uniform size of each individual data fold?",
+                formula: "Fold Size = Total Instances / n = 1,500 / 10 = 150 samples",
+                options: ["15 samples", "150 samples", "1,350 samples", "100 samples"],
+                correct: 1
+            },
+            {
+                q: "A diagnostic system tracks a dataset where TP = 9, FP = 1, FN = 91, TN = 900. Calculate the calculated Precision value.",
+                formula: "Precision = TP / (TP + FP) = 9 / (9 + 1) = 9 / 10 = 0.90",
+                options: ["0.10", "0.90", "0.09", "0.99"],
+                correct: 1
+            },
+            {
+                q: "Using the matrix properties from Question 49 (TP = 9, FP = 1, FN = 91, TN = 900), find the Recall rate.",
+                formula: "Recall = TP / (TP + FN) = 9 / (9 + 91) = 9 / 100 = 0.09",
+                options: ["0.90", "0.09", "0.10", "0.01"],
+                correct: 1
+            },
+            {
+                q: "Combine the results of Question 49 and Question 50 (Precision = 0.90, Recall = 0.09) to solve for the final model F1-Score.",
+                formula: "F1-Score = 2 * (0.90 * 0.09) / (0.90 + 0.09) = 0.162 / 0.99 = 0.1636",
+                options: ["0.4950", "0.1636", "0.2000", "0.0818"],
+                correct: 1
+            },
+            {
+                q: "A multi-class model yields the following classification results: Actual Class 1 items correct = 50, Class 1 items predicted as Class 2 = 5; Actual Class 2 items predicted as Class 1 = 10, Class 2 items correct = 35. What is the total accuracy of this system?",
+                formula: "Total Correct = 50 + 35 = 85\nTotal Instances = 50 + 5 + 10 + 35 = 100\nAccuracy = 85 / 100 = 0.85",
+                options: ["0.80", "0.85", "0.90", "0.75"],
+                correct: 1
+            },
+            {
+                q: "An imbalanced dataset engine logs the following summary: TP = 15, FP = 5, FN = 35, TN = 945. What is the calculated Accuracy?",
+                formula: "Accuracy = (TP + TN) / Total = (15 + 5 + 35 + 945) = 960 / 1000 = 0.960",
+                options: ["0.945", "0.960", "0.750", "0.980"],
+                correct: 1
+            },
+            {
+                q: "A customer targeting classifier executes 5 separate validation test iterations during cross-validation, logging individual folder accuracy benchmarks at: 0.82, 0.85, 0.88, 0.84, and 0.86. Calculate the final performance estimate.",
+                formula: "Average Accuracy = (0.82 + 0.85 + 0.88 + 0.84 + 0.86) / 5 = 4.25 / 5 = 0.850",
+                options: ["0.840", "0.850", "0.860", "0.830"],
+                correct: 1
+            },
+            {
+                q: "A binary risk model generates a performance table containing: TP = 40, TN = 160, FP = 10, FN = 40. Determine the Specificity.",
+                formula: "Specificity = TN / (TN + FP) = 160 / (160 + 10) = 160 / 170 = 0.941",
+                options: ["0.800", "0.500", "0.941", "0.888"],
+                correct: 2
+            },
+            {
+                q: "A search evaluation pipeline shows a precision rate of 1.00 (100%) and a calculated recall rate of 0.02 (2%). Find the corresponding F1-Score.",
+                formula: "F1-Score = 2 * (1.00 * 0.02) / (1.00 + 0.02) = 0.04 / 1.02 = 0.0392",
+                options: ["0.5100", "0.0392", "0.0200", "0.0400"],
+                correct: 1
+            },
+            {
+                q: "A dataset has exactly 200 actual positive examples. If the model incorrectly misses 40 of these positive cases (classifying them as negative), what is the resulting True Positive (TP) count?",
+                formula: "Actual Positives = TP + FN -> 200 = TP + 40 -> TP = 200 - 40 = 160",
+                options: ["40", "160", "240", "100"],
+                correct: 1
+            },
+            {
+                q: "Using the parameters established in Question 57, if the model also misclassifies 20 negative examples as positive, compute the Precision value.",
+                formula: "TP = 160, FP = 20 -> Precision = TP / (TP + FP) = 160 / (160 + 20) = 160 / 180 = 0.889",
+                options: ["0.800", "0.889", "0.750", "0.842"],
+                correct: 1
+            },
+            {
+                q: "Calculate the absolute Error Rate of a system that records: TP = 70, TN = 130, FP = 15, FN = 35.",
+                formula: "Accuracy = (70 + 130) / (70 + 130 + 15 + 35) = 200 / 250 = 0.80\nError Rate = 1 - Accuracy = 1 - 0.80 = 0.20",
+                options: ["0.80", "0.20", "0.25", "0.15"],
+                correct: 1
+            },
+            {
+                q: "A dataset contains 12,000 data rows. A validation set configuration requires extracting a clean segment equal to exactly 15% of the database. How many lines are assigned to this validation split?",
+                formula: "Validation Volume = 12,000 * 0.15 = 1,800 rows",
+                options: ["1,500 rows", "1,800 rows", "2,400 rows", "1,200 rows"],
+                correct: 1
+            },
+            {
+                q: "If an analyst conducts a Leave-One-Out Cross-Validation routine on a table containing 85 total entries, how many execution loops must the training framework complete?",
+                formula: "Total Loops = Number of Samples (m) = 85 iterations",
+                options: ["10 loops", "1 loop", "85 loops", "5 loops"],
+                correct: 2
+            },
+            {
+                q: "An engineering check returns: TP = 500, FP = 0, FN = 100, TN = 400. Find the Precision coefficient.",
+                formula: "Precision = TP / (TP + FP) = 500 / (500 + 0) = 1.000",
+                options: ["0.833", "1.000", "0.900", "0.500"],
+                correct: 1
+            },
+            {
+                q: "From the diagnostic parameters in Question 62 (TP = 500, FP = 0, FN = 100, TN = 400), determine the system Recall value.",
+                formula: "Recall = TP / (TP + FN) = 500 / (500 + 100) = 500 / 600 = 0.833",
+                options: ["1.000", "0.833", "0.800", "0.750"],
+                correct: 1
+            },
+            {
+                q: "A security categorization framework yields: TP = 300, FP = 200, FN = 100, TN = 400. Compute the overall accuracy rating.",
+                formula: "Accuracy = (TP + TN) / Total = (300 + 400) / (300 + 200 + 100 + 400) = 700 / 1000 = 0.70",
+                options: ["0.60", "0.70", "0.75", "0.65"],
+                correct: 1
+            },
+            {
+                q: "A marketing lift analysis divides a ranked test set of 10,000 cases into 10 uniform bins. If Bin 1 captures 210 actual positive cases out of a total population of 500 positives, what percentage of total positive cases does this single bin contain?",
+                formula: "Percentage = (Bin Positives / Total Positives) * 100 = (210 / 500) * 100 = 42.0%",
+                options: ["21.0%", "42.0%", "50.0%", "10.5%"],
+                correct: 1
+            },
+            {
+                q: "Referencing the ranking framework from Question 65, if Bin 2 subsequently captures an additional 120 actual positive cases, what is the cumulative percentage of total positive cases contained across the first two bins?",
+                formula: "Cumulative Positives = 210 + 120 = 330\nCumulative Percentage = (330 / 500) * 100 = 66.0%",
+                options: ["42.0%", "66.0%", "33.0%", "78.0%"],
+                correct: 1
+            },
+            {
+                q: "A model evaluates a balanced validation partition where TP = 400, TN = 400, FP = 100, FN = 100. Determine the Specificity.",
+                formula: "Specificity = TN / (TN + FP) = 400 / (400 + 100) = 400 / 500 = 0.80",
+                options: ["0.75", "0.80", "0.85", "0.90"],
+                correct: 1
+            },
+            {
+                q: "Compute the F1-Score for an asset tracking engine that scores a perfect Precision of 1.00 but captures a Recall of only 0.50.",
+                formula: "F1-Score = 2 * (1.00 * 0.50) / (1.00 + 0.50) = 1.00 / 1.50 = 0.667",
+                options: ["0.750", "0.667", "0.500", "0.700"],
+                correct: 1
+            },
+            {
+                q: "A software module tests an imbalanced tracking frame, listing: TP = 5, FP = 0, FN = 95, TN = 900. Compute the Precision.",
+                formula: "Precision = TP / (TP + FP) = 5 / (5 + 0) = 1.00",
+                options: ["0.05", "1.00", "0.95", "0.00"],
+                correct: 1
+            },
+            {
+                q: "Using the metric profiles from Question 69 (TP = 5, FP = 0, FN = 95, TN = 900), find the resulting Recall score.",
+                formula: "Recall = TP / (TP + FN) = 5 / (5 + 95) = 5 / 100 = 0.05",
+                options: ["1.00", "0.05", "0.10", "0.50"],
+                correct: 1
+            }
+        ];
+
+        let shuffledQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let hasAnswered = false;
+
+        const questionBox = document.getElementById("question-box");
+        const formulaBox = document.getElementById("math-formula-box");
+        const optionsContainer = document.getElementById("options-container");
+        const nextBtn = document.getElementById("next-btn");
+        const questionCounter = document.getElementById("question-counter");
+        const scoreCounter = document.getElementById("score-counter");
+        const progressBar = document.getElementById("progress-bar");
+        const quizCore = document.getElementById("quiz-core");
+        const resultsScreen = document.getElementById("results-screen");
+        const finalScoreText = document.getElementById("final-score-text");
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+
+            const fullDatasetCopy = JSON.parse(JSON.stringify(quizData));
+
+            const conceptualGroup = fullDatasetCopy.filter(item => !item.hasOwnProperty('formula'));
+            const solvingGroup = fullDatasetCopy.filter(item => item.hasOwnProperty('formula'));
+
+            shuffleArray(conceptualGroup);
+            shuffleArray(solvingGroup);
+
+            shuffledQuestions = conceptualGroup.concat(solvingGroup);
+
+            showQuestion();
+        }
+
+        function showQuestion() {
+            hasAnswered = false;
+            nextBtn.classList.add("hidden");
+
+            questionCounter.innerText = `Question ${currentQuestionIndex + 1} of ${shuffledQuestions.length}`;
+            scoreCounter.innerText = `Score: ${score}`;
+            progressBar.style.width = `${(currentQuestionIndex / shuffledQuestions.length) * 100}%`;
+
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            questionBox.innerText = currentQuestion.q;
+
+            if (currentQuestion.formula) {
+                formulaBox.innerText = `⚙️ SOLUTION:\n${currentQuestion.formula}`;
+                formulaBox.classList.add("hidden");
+            } else {
+                formulaBox.classList.add("hidden");
+            }
+
+            const correctAnswerText = currentQuestion.options[currentQuestion.correct];
+
+            shuffleArray(currentQuestion.options);
+
+            optionsContainer.innerHTML = "";
+            currentQuestion.options.forEach((option) => {
+                const button = document.createElement("button");
+                button.innerText = option;
+                button.classList.add("option-btn");
+                button.setAttribute("type", "button");
+
+                button.addEventListener("click", () => {
+                    if (hasAnswered) return;
+                    hasAnswered = true;
+
+                    const options = optionsContainer.getElementsByClassName("option-btn");
+
+                    if (option === correctAnswerText) {
+                        button.classList.add("correct");
+                        score++;
+                        scoreCounter.innerText = `Score: ${score}`;
+                    } else {
+                        button.classList.add("incorrect");
+                        Array.from(options).forEach(opt => {
+                            if (opt.innerText === correctAnswerText) opt.classList.add("correct");
+                        });
+                    }
+
+                    if (currentQuestion.formula) {
+                        formulaBox.classList.remove("hidden");
+                    }
+
+                    for (let i = 0; i < options.length; i++) {
+                        options[i].disabled = true;
+                    }
+
+                    nextBtn.classList.remove("hidden");
+                });
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        nextBtn.addEventListener("click", () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                showQuestion();
+            } else {
+                quizCore.classList.add("hidden");
+                nextBtn.classList.add("hidden");
+                resultsScreen.classList.remove("hidden");
+                progressBar.style.width = "100%";
+
+                const percentage = Math.round((score / shuffledQuestions.length) * 100);
+                finalScoreText.innerText = `SCORE: ${score} / ${shuffledQuestions.length} (${percentage}%).`;
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", initQuiz);
+    </script>
+</body>
+
+</html>
